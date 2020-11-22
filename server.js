@@ -55,12 +55,12 @@ function startApp() {
 		});
 }
 
-// function viewEmployees() {
-// 	console.log("View Employees here!");
-// }
+
 
 connection.connect(function (err) {
 	if (err) throw err;
 	startApp();
 	connection.end();
 });
+
+module.exports = {startApp};
