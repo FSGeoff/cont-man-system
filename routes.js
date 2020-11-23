@@ -14,7 +14,6 @@ function viewEmployees() {
 	connection.query(query, function (err, res) {
 		if (err) throw err;
 		console.table(res);
-		reStartApp();
 	});
 }
 function viewEmployeesByDept() {
@@ -34,7 +33,7 @@ function viewEmployeesByDept() {
 			connection.query(query, function (err, res) {
 				if (err) throw err;
 				console.table(res);
-				reStartApp();
+				server.startApp();
 			});
 		});
 }
@@ -56,15 +55,15 @@ function viewEmployeesByRole() {
 				(err, res) => {
 					if (err) throw err;
 					console.table(res);
-					reStartApp();
+					server.startApp();
 				}
 			);
 		});
 }
 
-function addEmployee() {
-	inquirer
-		.prompt([
+async function addEmployee() {
+	try {
+		const answer = await inquirer.prompt([
 			{
 				type: "input",
 				message: "Please enter employee's first name.",
@@ -88,41 +87,49 @@ function addEmployee() {
 					"2818",
 					"2919",
 				],
-				filter: function () {
-					let manager_id = "";
-					switch (answer.role_id) {
-						case "2410":
-							manager_id = 6000;
-							break;
-						case "2411":
-							manager_id = 5000;
-							break;
-						case "2412":
-							manager_id = 5000;
-							break;
-						case "2413":
-							manager_id = 5000;
-							break;
-						case "2415":
-							manager_id = 5000;
-							break;
-						case "2418":
-							manager_id = 5000;
-							break;
-						case "2419":
-							manager_id = 2414;
-							break;
-					}
-				},
 			},
-		])
-		.then((answer) => {
-			connection.query(query + values, function (err, res) {
+		]);
+		// .then((answer) => {
+		const { first_name, last_name, role_id } = answer;
+		let manager_id = "";
+		switch (role_id) {
+			case "2410":
+				manager_id = 6000;
+				break;
+			case "2411":
+				manager_id = 5000;
+				break;
+			case "2412":
+				manager_id = 5000;
+				break;
+			case "2413":
+				manager_id = 5000;
+				break;
+			case "2415":
+				manager_id = 5000;
+				break;
+			case "2418":
+				manager_id = 5000;
+				break;
+			case "2419":
+				manager_id = 2414;
+				break;
+		}
+
+		let query =
+			"INSERT INTO employee(first_name, last_name, role_id, manager_id)VALUES(?, ?, ?, ?);";
+		connection.query(
+			query,
+			[first_name, last_name, role_id, manager_id],
+			function (err, res) {
 				if (err) throw err;
 				console.table(res);
-				reStartApp();
-			});
-		});
+			}
+		);
+		// });
+	} catch (err) {
+		throw err;
+	}
 }
 
 function removeEmployee() {
@@ -141,8 +148,8 @@ function removeEmployee() {
 				[last_name],
 				(err, res) => {
 					if (err) throw err;
-                    console.log(res.affectedRows + " row(s) removed");
-                    viewEmployees();
+					console.log(res.affectedRows + " row(s) removed");
+					viewEmployees();
 				}
 			);
 		});
@@ -166,67 +173,6 @@ function addRole() {
 	console.log("update role here!");
 }
 
-function reStartApp() {
-	inquirer
-		.prompt([
-			{
-				type: "list",
-				message: "What else would you like to do?",
-				name: "selection",
-				choices: [
-					"View all Employees",
-					"View all Employees by Department",
-					"View all Employees by Role",
-					"Add Employee",
-					"Add Department",
-					"Add Role",
-					"Remove Employee",
-					"Update Employee Role",
-					"Update Manager",
-					"Update Employee Manager",
-					"EXIT THE APP",
-				],
-			},
-		])
-		.then(({ selection }) => {
-			switch (selection) {
-				case "View all Employees":
-					viewEmployees();
-					break;
-				case "View all Employees by Department":
-					viewEmployeesByDept();
-					break;
-				case "View all Employees by Role":
-					viewEmployeesByRole();
-					break;
-				case "Add Employee":
-					addEmployee();
-					break;
-				case "Add Department":
-					addDepartment();
-					break;
-				case "Add Role":
-					addRole();
-					break;
-				case "Remove Employee":
-					removeEmployee();
-					break;
-				case "Update Employee Role":
-					updateRole();
-					break;
-				case "Update Manager":
-					updateManager();
-					break;
-				case "Update Employee Manager":
-					updateEmployeeManager();
-					break;
-				case "EXIT THE APP":
-					endApp();
-					break;
-			}
-		});
-}
-
 function endApp() {
 	connection.end();
 }
@@ -242,4 +188,5 @@ module.exports = {
 	addDepartment,
 	addRole,
 	viewEmployeesByRole,
+	endApp,
 };
