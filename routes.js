@@ -24,10 +24,10 @@ function viewEmployeesByDept() {
 				type: "list",
 				message: "Which Department would you like to search?",
 				name: "departmentId",
-				choices: ["2414", "5000"],
+				choices: ["2414", "5000", "6000"],
 			},
 		])
-		.then(function (answer) {
+		.then((answer) => {
 			let query =
 				"SELECT * FROM employee WHERE manager_id = " +
 				answer.departmentId;
@@ -39,12 +39,116 @@ function viewEmployeesByDept() {
 		});
 }
 
+function viewEmployeesByRole() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message:
+					"Please enter the employee role you would like to view.",
+				name: "roleTitle",
+			},
+		])
+		.then(({ roleTitle }) => {
+			connection.query(
+				"SELECT  role.title, employee.first_name, employee.last_name,  role.salary FROM employee INNER JOIN role WHERE role.title = ?",
+				[roleTitle],
+				(err, res) => {
+					if (err) throw err;
+					console.table(res);
+					reStartApp();
+				}
+			);
+		});
+}
+
 function addEmployee() {
-	console.log("add EMP here!");
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter employee's first name.",
+				name: "first_name",
+			},
+			{
+				type: "input",
+				message: "Please enter employee's last name.",
+				name: "last_name",
+			},
+			{
+				type: "list",
+				message: "Please select from employee role IDs",
+				name: "role_id",
+				choices: [
+					"2410",
+					"2411",
+					"2412",
+					"2413",
+					"2515",
+					"2818",
+					"2919",
+				],
+			},
+		])
+		.then((answer) => {
+			let manager_id = "";
+			switch (answer.role_id) {
+				case "2410":
+					manager_id = 6000;
+					break;
+				case "2411":
+					manager_id = 5000;
+					break;
+				case "2412":
+					manager_id = 5000;
+					break;
+				case "2413":
+					manager_id = 5000;
+					break;
+				case "2415":
+					manager_id = 5000;
+					break;
+				case "2418":
+					manager_id = 5000;
+					break;
+				case "2419":
+					manager_id = 2414;
+					break;
+			}
+
+			let query =
+				"INSERT INTO employee(first_name, last_name, role_id, manager_id)";
+			let values =
+				"VALUES(answer.first_name, answer.last_name, answer.role_id, manager_id)";
+
+			connection.query(query + values, function (err, res) {
+				if (err) throw err;
+				console.table(res);
+				reStartApp();
+			});
+		});
 }
 
 function removeEmployee() {
-	console.log("remove EMP here!");
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message:
+					"Please input the last name of the employee you would like to delete.",
+				name: "last_name",
+			},
+		])
+		.then(({ last_name }) => {
+			connection.query(
+				"DELETE FROM employee WHERE last_name = ?",
+				[last_name],
+				(err, res) => {
+					if (err) throw err;
+					console.table(res);
+				}
+			);
+		});
 }
 
 function updateRole() {
@@ -58,6 +162,12 @@ function updateManager() {
 function updateEmployeeManager() {
 	console.log("update manager here!");
 }
+function addDepartment() {
+	console.log("update dept here!");
+}
+function addRole() {
+	console.log("update role here!");
+}
 
 function reStartApp() {
 	inquirer
@@ -69,7 +179,10 @@ function reStartApp() {
 				choices: [
 					"View all Employees",
 					"View all Employees by Department",
+					"View all Employees by Role",
 					"Add Employee",
+					"Add Department",
+					"Add Role",
 					"Remove Employee",
 					"Update Employee Role",
 					"Update Manager",
@@ -86,8 +199,17 @@ function reStartApp() {
 				case "View all Employees by Department":
 					viewEmployeesByDept();
 					break;
+				case "View all Employees by Role":
+					viewEmployeesByRole();
+					break;
 				case "Add Employee":
 					addEmployee();
+					break;
+				case "Add Department":
+					addDepartment();
+					break;
+				case "Add Role":
+					addRole();
 					break;
 				case "Remove Employee":
 					removeEmployee();
@@ -101,8 +223,15 @@ function reStartApp() {
 				case "Update Employee Manager":
 					updateEmployeeManager();
 					break;
+				case "EXIT THE APP":
+					endApp();
+					break;
 			}
 		});
+}
+
+function endApp() {
+	connection.end();
 }
 
 module.exports = {
@@ -113,4 +242,7 @@ module.exports = {
 	updateRole,
 	updateManager,
 	updateEmployeeManager,
+	addDepartment,
+	addRole,
+	viewEmployeesByRole,
 };

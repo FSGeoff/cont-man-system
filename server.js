@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const routes = require("./routes")
+const routes = require("./routes");
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -19,8 +19,11 @@ function startApp() {
 				name: "selection",
 				choices: [
 					"View all Employees",
-					"View all Employees by Department",
+          "View all Employees by Department",
+          "View all Employees by Role",
 					"Add Employee",
+					"Add Department",
+					"Add Role",
 					"Remove Employee",
 					"Update Employee Role",
 					"Update Manager",
@@ -28,16 +31,25 @@ function startApp() {
 				],
 			},
 		])
-		.then(({selection}) => {
+		.then(({ selection }) => {
 			switch (selection) {
 				case "View all Employees":
 					routes.viewEmployees();
 					break;
 				case "View all Employees by Department":
 					routes.viewEmployeesByDept();
-					break;
+          break;
+          case "View all Employees by Role":
+					routes.viewEmployeesByRole();
+          break;
 				case "Add Employee":
 					routes.addEmployee();
+					break;
+				case "Add Department":
+					routes.addDepartment();
+					break;
+				case "Add Role":
+					routes.addRole();
 					break;
 				case "Remove Employee":
 					routes.removeEmployee();
@@ -55,12 +67,10 @@ function startApp() {
 		});
 }
 
-
-
 connection.connect(function (err) {
 	if (err) throw err;
 	startApp();
 	connection.end();
 });
 
-module.exports = {startApp};
+module.exports = { startApp };
