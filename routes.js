@@ -88,39 +88,35 @@ function addEmployee() {
 					"2818",
 					"2919",
 				],
+				filter: function () {
+					let manager_id = "";
+					switch (answer.role_id) {
+						case "2410":
+							manager_id = 6000;
+							break;
+						case "2411":
+							manager_id = 5000;
+							break;
+						case "2412":
+							manager_id = 5000;
+							break;
+						case "2413":
+							manager_id = 5000;
+							break;
+						case "2415":
+							manager_id = 5000;
+							break;
+						case "2418":
+							manager_id = 5000;
+							break;
+						case "2419":
+							manager_id = 2414;
+							break;
+					}
+				},
 			},
 		])
 		.then((answer) => {
-			let manager_id = "";
-			switch (answer.role_id) {
-				case "2410":
-					manager_id = 6000;
-					break;
-				case "2411":
-					manager_id = 5000;
-					break;
-				case "2412":
-					manager_id = 5000;
-					break;
-				case "2413":
-					manager_id = 5000;
-					break;
-				case "2415":
-					manager_id = 5000;
-					break;
-				case "2418":
-					manager_id = 5000;
-					break;
-				case "2419":
-					manager_id = 2414;
-					break;
-			}
-
-			let query =
-				"INSERT INTO employee(first_name, last_name, role_id, manager_id)";
-			let values =
-				"VALUES(answer.first_name, answer.last_name, answer.role_id, manager_id)";
-
 			connection.query(query + values, function (err, res) {
 				if (err) throw err;
 				console.table(res);
@@ -145,7 +141,8 @@ function removeEmployee() {
 				[last_name],
 				(err, res) => {
 					if (err) throw err;
-					console.table(res);
+                    console.log(res.affectedRows + " row(s) removed");
+                    viewEmployees();
 				}
 			);
 		});
