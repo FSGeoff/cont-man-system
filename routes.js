@@ -1,8 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
-
-
 const connection = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
@@ -15,14 +13,30 @@ function viewEmployees() {
 	let query = "SELECT * FROM employee;";
 	connection.query(query, function (err, res) {
 		if (err) throw err;
-        console.table(res);
-        reStartApp();
-        
+		console.table(res);
+		reStartApp();
 	});
-	
 }
 function viewEmployeesByDept() {
-	console.log("View Employees by DEPT here!");
+	inquirer
+		.prompt([
+			{
+				type: "list",
+				message: "Which Department would you like to search?",
+				name: "departmentId",
+				choices: ["2414", "5000"],
+			},
+		])
+		.then(function (answer) {
+			let query =
+				"SELECT * FROM employee WHERE manager_id = " +
+				answer.departmentId;
+			connection.query(query, function (err, res) {
+				if (err) throw err;
+				console.table(res);
+				reStartApp();
+			});
+		});
 }
 
 function addEmployee() {
@@ -60,10 +74,11 @@ function reStartApp() {
 					"Update Employee Role",
 					"Update Manager",
 					"Update Employee Manager",
+					"EXIT THE APP",
 				],
 			},
 		])
-		.then(({selection}) => {
+		.then(({ selection }) => {
 			switch (selection) {
 				case "View all Employees":
 					viewEmployees();
