@@ -4,6 +4,8 @@
 ## Table of Contents
 [Description](#description)<br/>
 [Tools Used](#tools-used)<br/>
+[Capabilities](#capabilities)<br/>
+[Screenshots](#screenshots)<br/>
 [Questions](#questions)
 
 
@@ -15,6 +17,19 @@ This web application will create interfaces that make it easy for non-developers
 ## Tools Used
 * **mysql** NPM package to connect to your MySQL database and perform queries
 * **inquirer** NPM package to interact with the user via the command-line.
-* **console.table** NPM package to print MySQL rows to the console.
+* **console.table** NPM package to print mysql rows to the console.
+
+## Capabilities
+The app can perform the following functions:
+* View all Employees
+* View all Employees by Department
+* View all Employees by Role
+* Add Employees
+
+##  Screenshots
 
 ## Questions
+Please feel free to contact me w/any questions.<br/>
+**Geoff Nix** <br/>
+**FullStackGeoff@gmail.com**<br/>
+**(347)727-1956**

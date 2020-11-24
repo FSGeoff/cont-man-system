@@ -10,9 +10,9 @@ const connection = mysql.createConnection({
 	database: "cont_manDB",
 });
 
-async function startApp() {
-	try {
-		const todo = await inquirer.prompt([
+function startApp() {
+	inquirer
+		.prompt([
 			{
 				type: "list",
 				message: "What would you like to do?",
@@ -28,62 +28,43 @@ async function startApp() {
 					"Update Employee Role",
 					"Update Manager",
 					"Update Employee Manager",
-					"EXIT APP",
 				],
 			},
-		]);
-		const { selection } = todo;
-		// .then(({ selection }) => {
-		switch (selection) {
-			case "View all Employees":
-				await routes.viewEmployees();
-				await startApp();
-				break;
-			case "View all Employees by Department":
-				routes.viewEmployeesByDept();
-				startApp();
-				break;
-			case "View all Employees by Role":
-				routes.viewEmployeesByRole();
-				startApp();
-				break;
-			case "Add Employee":
-				await routes.addEmployee();
-				await startApp();
-				break;
-			case "Add Department":
-				routes.addDepartment();
-				startApp();
-				break;
-			case "Add Role":
-				routes.addRole();
-				startApp();
-				break;
-			case "Remove Employee":
-				routes.removeEmployee();
-				startApp();
-				break;
-			case "Update Employee Role":
-				routes.updateRole();
-				startApp();
-				break;
-			case "Update Manager":
-				routes.updateManager();
-				startApp();
-				break;
-			case "Update Employee Manager":
-				routes.updateEmployeeManager();
-				startApp();
-				break;
-			case "EXIT APP":
-				routes.endApp();
-				break;
-		}
-		return selection;
-		// });
-	} catch (err) {
-		throw err;
-	}
+		])
+		.then(({ selection }) => {
+			switch (selection) {
+				case "View all Employees":
+					routes.viewEmployees();
+					break;
+				case "View all Employees by Department":
+					routes.viewEmployeesByDept();
+					break;
+				case "View all Employees by Role":
+					routes.viewEmployeesByRole();
+					break;
+				case "Add Employee":
+					routes.addEmployee();
+					break;
+				case "Add Department":
+					routes.addDepartment();
+					break;
+				case "Add Role":
+					routes.addRole();
+					break;
+				case "Remove Employee":
+					routes.removeEmployee();
+					break;
+				case "Update Employee Role":
+					routes.updateRole();
+					break;
+				case "Update Manager":
+					routes.updateManager();
+					break;
+				case "Update Employee Manager":
+					routes.updateEmployeeManager();
+					break;
+			}
+		});
 }
 
 connection.connect(function (err) {
