@@ -25,9 +25,11 @@ function startApp() {
 					"Add Department",
 					"Add Role",
 					"Remove Employee",
+					"Remove Role",
 					"Update Employee Role",
 					"Update Manager",
 					"Update Employee Manager",
+					"View Payroll",
 				],
 			},
 		])
@@ -54,6 +56,9 @@ function startApp() {
 				case "Remove Employee":
 					routes.removeEmployee();
 					break;
+				case "View Payroll":
+					routes.payRoll();
+					break;
 				case "Update Employee Role":
 					routes.updateRole();
 					break;
@@ -63,6 +68,8 @@ function startApp() {
 				case "Update Employee Manager":
 					routes.updateEmployeeManager();
 					break;
+				case "Remove Role":
+					routes.removeRole();
 			}
 		});
 }

@@ -137,8 +137,110 @@ function removeEmployee() {
 		});
 }
 
-function updateRole() {
-	console.log("update role here!");
+function removeRole() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "What role would you like to remove?",
+				name: "removeRole",
+			},
+		])
+		.then((answer) => {
+			const { removeRole } = answer;
+			query = "DELETE FROM role WHERE title = ?;";
+			connection.query(query, [removeRole], (err, res) => {
+				if (err) throw err;
+				viewRoles();
+				reStartApp();
+			});
+		});
+}
+function viewRoles() {
+	let query = "SELECT * FROM role;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.table(res);
+	});
+}
+
+// function updateRole() {
+// 	inquirer
+// 		.prompt([
+// 			{
+// 				type: "list",
+// 				message: "Please select which role you would like to update.",
+// 				name: "title",
+// 				choices: [
+// 					"Senior Developer",
+// 					"BA/QA Admin",
+// 					"Jr Developer",
+// 					"Intern",
+// 					"Marketing Manager",
+// 					"Architect",
+// 					"Engineer",
+// 					"Manager",
+// 					"Office Manager",
+// 					"Developer Manager",
+// 					"HR Manager",
+// 					"Office Assistant",
+// 				],
+// 				type: "input",
+// 				message: "Please select the appropriate Department ID number",
+// 				name: "id",
+// 			},
+
+// 			{
+// 				type: "input",
+// 				message: "Please enter salary",
+// 				name: "salary",
+// 			},
+// 		])
+// 		.then((answer) => {
+// 			let query =
+// 				"UPDATE role SET title = ?  salary = ? WHERE departmentId = ?;";
+// 			const { title, id, salary } = answer;
+// 			connection.query(query, [role, id, salary], (err, res) => {
+// 				if (err) throw err;
+// 				console.table(res);
+// 			});
+// 		});
+// }
+
+function payRoll() {
+	inquirer
+		.prompt([
+			{
+				type: "list",
+				message:
+					"Please select a position and the total payroll for that position will be displayed",
+				name: "payroll",
+				choices: [
+					"Senior Developer",
+					"BA/QA Admin",
+					"Jr Developer",
+					"Intern",
+					"Marketing Manager",
+					"Architect",
+					"Engineer",
+					"Manager",
+					"Office Manager",
+					"Developer Manager",
+					"HR Manager",
+					"Office Assistant",
+				],
+			},
+		])
+		.then((answer) => {
+			const { payroll } = answer;
+			let query =
+				"SELECT  title, SUM(salary) AS total_payroll FROM employee FULL JOIN role WHERE title = ?;";
+			connection.query(query, [payroll], (err, res) => {
+				if (err) throw err;
+				reStartApp();
+				console.table(res);
+			});
+		});
 }
 
 function updateManager() {
@@ -149,10 +251,63 @@ function updateEmployeeManager() {
 	console.log("update manager here!");
 }
 function addDepartment() {
-	console.log("update dept here!");
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter a Department ID number(4 digits)",
+				name: "department_id",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department",
+				name: "department",
+			},
+		])
+		.then((answer) => {
+			const { department_id, department } = answer;
+			let query = "INSERT INTO department(id, name)VALUES(?, ?);";
+			connection.query(query, [department_id, department], (err, res) => {
+				if (err) throw err;
+				console.table(res);
+				reStartApp();
+			});
+		});
 }
 function addRole() {
-	console.log("update role here!");
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter a title",
+				name: "title",
+			},
+			{
+				type: "input",
+				message: "Please enter a salary",
+				name: "salary",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department ID",
+				name: "department_id",
+			},
+		])
+		.then((answer) => {
+			const { title, salary, department_id } = answer;
+			let query =
+				"INSERT INTO role(title, salary, departmentId)VALUES(?, ?, ?);";
+			connection.query(
+				query,
+				[title, salary, department_id],
+				(err, res) => {
+					if (err) throw err;
+					console.table(res);
+					viewEmployees();
+					reStartApp();
+				}
+			);
+		});
 }
 
 function reStartApp() {
@@ -225,10 +380,11 @@ module.exports = {
 	viewEmployeesByDept,
 	addEmployee,
 	removeEmployee,
-	updateRole,
 	updateManager,
 	updateEmployeeManager,
 	addDepartment,
 	addRole,
 	viewEmployeesByRole,
+	payRoll,
+	removeRole,
 };
