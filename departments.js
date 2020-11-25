@@ -2,7 +2,6 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const employees = require("./employees");
 const role = require("./role");
-const departments = require("./departments");
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -12,12 +11,47 @@ const connection = mysql.createConnection({
 	database: "cont_manDB",
 });
 
-function startApp() {
+function addDepartment() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter a Department ID number(4 digits)",
+				name: "department_id",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department",
+				name: "department",
+			},
+		])
+		.then((answer) => {
+			const { department_id, department } = answer;
+			let query = "INSERT INTO department(id, name)VALUES(?, ?);";
+			connection.query(query, [department_id, department], (err, res) => {
+				if (err) throw err;
+				console.table(res);
+				viewDepartments();
+				reStartApp();
+			});
+		});
+}
+
+function viewDepartments() {
+	query = "SELECT * FROM department;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+        console.table(res);
+        reStartApp();
+	});
+}
+
+function reStartApp() {
 	inquirer
 		.prompt([
 			{
 				type: "list",
-				message: "What would you like to do?",
+				message: "What else would you like to do?",
 				name: "selection",
 				choices: [
 					"View all Employees",
@@ -27,9 +61,12 @@ function startApp() {
 					"Add Department",
 					"Add Role",
 					"Remove Employee",
-					"Remove Role",
+					"Update Employee Role",
+					"Update Manager",
+					"Update Employee Manager",
 					"View Departments",
 					"View Payroll",
+					"EXIT THE APP",
 				],
 			},
 		])
@@ -48,16 +85,16 @@ function startApp() {
 					employees.addEmployee();
 					break;
 				case "Add Department":
-					departments.addDepartment();
+					addDepartment();
 					break;
 				case "Add Role":
 					role.addRole();
 					break;
-				case "View Departments":
-					departments.viewDepartments();
-					break;
 				case "Remove Employee":
 					employees.removeEmployee();
+					break;
+				case "View Departments":
+					viewDepartments();
 					break;
 				case "View Payroll":
 					role.payRoll();
@@ -66,19 +103,25 @@ function startApp() {
 				// 	role.updateRole();
 				// 	break;
 				// case "Update Manager":
-				// 	routes.updateManager();
+				// 	updateManager();
 				// 	break;
 				// case "Update Employee Manager":
-				// 	routes.updateEmployeeManager();
+				// 	updateEmployeeManager();
 				// 	break;
-				case "Remove Role":
-					role.removeRole();
+				case "EXIT THE APP":
+					endApp();
+					break;
 			}
 		});
 }
 
-connection.connect(function (err) {
-	if (err) throw err;
-	startApp();
+function endApp() {
 	connection.end();
-});
+}
+
+module.exports = {
+	viewDepartments,
+	addDepartment,
+	reStartApp,
+	endApp,
+};

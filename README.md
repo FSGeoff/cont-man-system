@@ -28,6 +28,7 @@ The app can perform the following functions:
 * Remove Employee
 * Add Role
 * View Roles
+* View Departments
 * Remove Roles
 * View Payroll by Title
 
