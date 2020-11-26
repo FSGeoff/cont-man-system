@@ -1,14 +1,3 @@
-DROP DATABASE IF EXISTS cont_manDB;
-
-CREATE DATABASE cont_manDB;
-
-USE cont_manDB;
-
-CREATE TABLE department(
-id INT NOT NULL,
-name VARCHAR(30) NOT NULL,
-PRIMARY KEY(id)
-);
 INSERT INTO department(id, name)
 VALUES(2413, "Engineer");
 INSERT INTO department(id, name)
@@ -32,14 +21,6 @@ VALUES(5000, "Office Manager");
 
 
 SELECT * FROM department;
-
-CREATE TABLE role(
-id INT NOT NULL AUTO_INCREMENT,
-title VARCHAR(30) NOT NULL,
-salary INT(10) NOT NULL,
-departmentId INT(10),  -- holds reference to depertment role
-PRIMARY KEY(id)
-);
 
 INSERT INTO role(title, salary, departmentId)
 VALUES("Marketing Manager", 105000, 2416);
@@ -67,19 +48,8 @@ VALUES("Office Manager", 150000, 5000);
 INSERT INTO role(title, salary, departmentId)
 VALUES("Developer Manager", 180000, 6000);
 
-
 SELECT * FROM Role;
 
-CREATE TABLE employee(
-id INT NOT NULL AUTO_INCREMENT,
-first_name VARCHAR(30) NOT NULL,
-last_name VARCHAR(30) NOT NULL,
-role_id INT(10), -- INT to hold reference to role employee has
-manager_id INT(10), -- INT to hold reference to another employee 
-					-- that manages the employee being Created. 
-                    -- This field may be null if the employee has no manager
-PRIMARY KEY(id)
-);
 SELECT * FROM employee WHERE manager_id = 2414;
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id)

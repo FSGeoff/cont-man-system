@@ -28,11 +28,14 @@ The app can perform the following functions:
 * Remove Employee
 * Add Role
 * View Roles
-* View Departments
 * Remove Roles
+* View Departments
 * View Payroll by Title
 
 ##  Screenshots
+![](./screenshots/screenShot1.png)
+![](./screenshots/screenShot2.png)
+![](./screenshots/screenShot4.png)
 
 ## Questions
 Please feel free to contact me w/any questions.<br/>

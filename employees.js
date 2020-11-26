@@ -3,6 +3,9 @@ const inquirer = require("inquirer");
 const departments = require("./departments");
 const role = require("./role");
 
+
+
+
 const connection = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
