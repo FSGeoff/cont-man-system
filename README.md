@@ -6,6 +6,7 @@
 [Tools Used](#tools-used)<br/>
 [Capabilities](#capabilities)<br/>
 [Screenshots](#screenshots)<br/>
+[Bugs](#bugs)<br/>
 [Questions](#questions)<br/>
 [License](#license)
 
@@ -38,7 +39,10 @@ The app can perform the following functions:
 ![](./screenshots/screenShot1.png)
 ![](./screenshots/screenShot2.png)
 ![](./screenshots/screenShot4.png)
-[Demo](https://drive.google.com/file/d/1IGyUDdblhD98_yIJCNIqkMFBjWh1nelV/view)
+[Demo](https://drive.google.com/file/d/1m1BejCaMldEsFL5vt20IkOa-j04GyV7j/view)
+
+## Bugs
+The application runs well, however, after performing 4 or more functions, the same question appear multiple times when selecting a function that takes user input. Also when exiting the app, an error is sometimes thrown. Basically, the app runs well until 4 or more functions are performed.
 
 ## Questions
 Please feel free to contact me w/any questions.<br/>

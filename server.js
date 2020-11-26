@@ -214,7 +214,7 @@ async function addEmployee() {
 //Remove Employee
 async function removeEmployee() {
 	try {
-		inquirer.prompt([
+		const answer = await inquirer.prompt([
 			{
 				type: "input",
 				message:
