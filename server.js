@@ -1,8 +1,10 @@
+// Required Packages
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const figlet = require("figlet");
 
-figlet("CMS", function (err, data) {
+//Console Artwork
+figlet("Cont-Man-System", function (err, data) {
 	if (err) {
 		console.log("Something went wrong...");
 		console.dir(err);
@@ -11,6 +13,7 @@ figlet("CMS", function (err, data) {
 	console.log(data);
 });
 
+//sql connection
 const connection = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
@@ -19,6 +22,7 @@ const connection = mysql.createConnection({
 	database: "cont_manDB",
 });
 
+//App starts here
 async function startApp() {
 	try {
 		const answer = await inquirer.prompt([
@@ -89,15 +93,18 @@ async function startApp() {
 	}
 }
 
+//View Employess
 function viewEmployees() {
 	let query = "SELECT * FROM employee;";
 	connection.query(query, function (err, res) {
 		if (err) throw err;
+
 		console.table(res);
 		startApp();
 	});
 }
 
+//View Employees by Department
 async function viewEmployeesByDept() {
 	try {
 		const answer = await inquirer
@@ -124,6 +131,7 @@ async function viewEmployeesByDept() {
 	}
 }
 
+//View Employees by Role
 async function viewEmployeesByRole() {
 	try {
 		const answer = await inquirer.prompt([
@@ -149,6 +157,7 @@ async function viewEmployeesByRole() {
 	}
 }
 
+// Add Employee
 async function addEmployee() {
 	try {
 		const answer = await inquirer.prompt([
@@ -202,6 +211,7 @@ async function addEmployee() {
 	}
 }
 
+//Remove Employee
 async function removeEmployee() {
 	try {
 		inquirer.prompt([
@@ -229,6 +239,7 @@ async function removeEmployee() {
 	}
 }
 
+//View Roles
 function viewRoles() {
 	let query = "SELECT * FROM role;";
 	connection.query(query, (err, res) => {
@@ -238,6 +249,7 @@ function viewRoles() {
 	});
 }
 
+//Remove Role
 async function removeRole() {
 	try {
 		const answer = await inquirer.prompt([
@@ -259,7 +271,7 @@ async function removeRole() {
 		throw err;
 	}
 }
-
+//Add Role
 async function addRole() {
 	try {
 		const answer = await inquirer.prompt([
@@ -294,6 +306,7 @@ async function addRole() {
 	}
 }
 
+//Update Salary
 async function updateSalary() {
 	try {
 		const answer = await inquirer.prompt([
@@ -320,6 +333,7 @@ async function updateSalary() {
 	}
 }
 
+//Payroll
 async function payRoll() {
 	try {
 		const answer = await inquirer.prompt([
@@ -358,6 +372,7 @@ async function payRoll() {
 	}
 }
 
+//Add Department
 async function addDepartment() {
 	try {
 		const answer = await inquirer.prompt([
@@ -386,6 +401,7 @@ async function addDepartment() {
 	}
 }
 
+//View Departments
 function viewDepartments() {
 	query = "SELECT * FROM department;";
 	connection.query(query, (err, res) => {
@@ -394,6 +410,8 @@ function viewDepartments() {
 		startApp();
 	});
 }
+
+//Exit App
 function exitApp() {
 	connection.end();
 }
