@@ -1,8 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const employees = require("./employees");
-const role = require("./role");
-const departments = require("./departments");
+const contmansystem = require("./contmansystem");
+const { viewRoles } = require("./contmansystem");
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -24,10 +23,12 @@ function startApp() {
 					"View all Employees by Department",
 					"View all Employees by Role",
 					"Add Employee",
+					"Remove Employee",
 					"Add Department",
 					"Add Role",
-					"Remove Employee",
 					"Remove Role",
+					"Update Salary",
+					"View all Roles",
 					"View Departments",
 					"View Payroll",
 				],
@@ -36,43 +37,40 @@ function startApp() {
 		.then(({ selection }) => {
 			switch (selection) {
 				case "View all Employees":
-					employees.viewEmployees();
+					contmansystem.viewEmployees();
 					break;
 				case "View all Employees by Department":
-					employees.viewEmployeesByDept();
+					contmansystem.viewEmployeesByDept();
 					break;
 				case "View all Employees by Role":
-					employees.viewEmployeesByRole();
+					contmansystem.viewEmployeesByRole();
 					break;
 				case "Add Employee":
-					employees.addEmployee();
+					contmansystem.addEmployee();
 					break;
 				case "Add Department":
-					departments.addDepartment();
+					contmansystem.addDepartment();
 					break;
 				case "Add Role":
-					role.addRole();
+					contmansystem.addRole();
+					break;
+				case "View all Roles":
+					contmansystem.viewRoles();
 					break;
 				case "View Departments":
-					departments.viewDepartments();
+					contmansystem.viewDepartments();
 					break;
 				case "Remove Employee":
-					employees.removeEmployee();
+					contmansystem.removeEmployee();
 					break;
 				case "View Payroll":
-					role.payRoll();
+					contmansystem.payRoll();
 					break;
-				// case "Update Employee Role":
-				// 	role.updateRole();
-				// 	break;
-				// case "Update Manager":
-				// 	routes.updateManager();
-				// 	break;
-				// case "Update Employee Manager":
-				// 	routes.updateEmployeeManager();
-				// 	break;
 				case "Remove Role":
-					role.removeRole();
+					contmansystem.removeRole();
+				case "Update Salary":
+					contmansystem.updateSalary();
+					break;
 			}
 		});
 }

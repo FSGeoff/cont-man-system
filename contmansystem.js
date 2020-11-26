@@ -1,10 +1,5 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const departments = require("./departments");
-const role = require("./role");
-
-
-
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -142,6 +137,166 @@ function removeEmployee() {
 		});
 }
 
+function viewRoles() {
+	let query = "SELECT * FROM role;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.table(res);
+		reStartApp();
+	});
+}
+
+function removeRole() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "What role would you like to remove?",
+				name: "removeRole",
+			},
+		])
+		.then((answer) => {
+			const { removeRole } = answer;
+			query = "DELETE FROM role WHERE title = ?;";
+			connection.query(query, [removeRole], (err, res) => {
+				if (err) throw err;
+				viewRoles();
+				reStartApp();
+			});
+		});
+}
+
+function addRole() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter a title",
+				name: "title",
+			},
+			{
+				type: "input",
+				message: "Please enter a salary",
+				name: "salary",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department ID",
+				name: "department_id",
+			},
+		])
+		.then((answer) => {
+			const { title, salary, department_id } = answer;
+			let query =
+				"INSERT INTO role(title, salary, departmentId)VALUES(?, ?, ?);";
+			connection.query(
+				query,
+				[title, salary, department_id],
+				(err, res) => {
+					if (err) throw err;
+					console.table(res);
+					viewRoles();
+					reStartApp();
+				}
+			);
+		});
+}
+
+function updateSalary() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "What's the new salary?",
+				name: "newSal",
+			},
+			{
+				type: "input",
+				message: "What title is being updated?",
+				name: "title",
+			},
+		])
+		.then((answer) => {
+			const { newSal, title } = answer;
+			let query = "UPDATE role SET salary = ? WHERE title = ?;";
+			connection.query(query, [newSal, title], (err, res) => {
+				if (err) throw err;
+				viewRoles();
+			});
+		});
+}
+
+function payRoll() {
+	inquirer
+		.prompt([
+			{
+				type: "list",
+				message:
+					"Please select a position and the total payroll for that position will be displayed",
+				name: "payroll",
+				choices: [
+					"Senior Developer",
+					"BA/QA Admin",
+					"Jr Developer",
+					"Intern",
+					"Marketing Manager",
+					"Architect",
+					"Engineer",
+					"Manager",
+					"Office Manager",
+					"Developer Manager",
+					"HR Manager",
+					"Office Assistant",
+				],
+			},
+		])
+		.then((answer) => {
+			const { payroll } = answer;
+			let query =
+				"SELECT  title, SUM(salary) AS total_payroll FROM employee FULL JOIN role WHERE title = ?;";
+			connection.query(query, [payroll], (err, res) => {
+				if (err) throw err;
+				console.table(res);
+				reStartApp();
+			});
+		});
+}
+
+function addDepartment() {
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				message: "Please enter a Department ID number",
+				name: "department_id",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department",
+				name: "department",
+			},
+		])
+		.then((answer) => {
+			const { department_id, department } = answer;
+			let query = "INSERT INTO department(id, name)VALUES(?, ?);";
+			connection.query(query, [department_id, department], (err, res) => {
+				if (err) throw err;
+				console.table(res);
+				viewDepartments();
+				reStartApp();
+			});
+		});
+}
+
+function viewDepartments() {
+	query = "SELECT * FROM department;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.table(res);
+		reStartApp();
+	});
+}
+
 function reStartApp() {
 	inquirer
 		.prompt([
@@ -154,12 +309,12 @@ function reStartApp() {
 					"View all Employees by Department",
 					"View all Employees by Role",
 					"Add Employee",
+					"Remove Employee",
 					"Add Department",
 					"Add Role",
-					"Remove Employee",
-					"Update Employee Role",
-					"Update Manager",
-					"Update Employee Manager",
+					"Remove Role",
+					"Update Salary",
+					"View all Roles",
 					"View Departments",
 					"View Payroll",
 					"EXIT THE APP",
@@ -181,29 +336,29 @@ function reStartApp() {
 					addEmployee();
 					break;
 				case "Add Department":
-					departments.addDepartment();
+					addDepartment();
 					break;
 				case "Add Role":
-					role.addRole();
+					addRole();
+					break;
+				case "Remove Role":
+					removeRole();
+					break;
+				case "Update Salary":
+					updateSalary();
 					break;
 				case "Remove Employee":
 					removeEmployee();
 					break;
+				case "View all Roles":
+					viewRoles();
+					break;
 				case "View Departments":
-					departments.viewDepartments();
+					viewDepartments();
 					break;
 				case "View Payroll":
-					role.payRoll();
+					payRoll();
 					break;
-				// case "Update Employee Role":
-				// 	role.updateRole();
-				// 	break;
-				// case "Update Manager":
-				// 	updateManager();
-				// 	break;
-				// case "Update Employee Manager":
-				// 	updateEmployeeManager();
-				// 	break;
 				case "EXIT THE APP":
 					endApp();
 					break;
@@ -221,6 +376,11 @@ module.exports = {
 	viewEmployeesByRole,
 	addEmployee,
 	removeEmployee,
-	reStartApp,
-	endApp,
+	viewDepartments,
+	addDepartment,
+	viewRoles,
+	removeRole,
+	updateSalary,
+	addRole,
+	payRoll,
 };

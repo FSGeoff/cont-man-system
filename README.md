@@ -29,6 +29,7 @@ The app can perform the following functions:
 * Add Role
 * View Roles
 * Remove Roles
+* Update Salary
 * View Departments
 * View Payroll by Title
 
@@ -36,6 +37,7 @@ The app can perform the following functions:
 ![](./screenshots/screenShot1.png)
 ![](./screenshots/screenShot2.png)
 ![](./screenshots/screenShot4.png)
+[Demo](https://drive.google.com/file/d/1IGyUDdblhD98_yIJCNIqkMFBjWh1nelV/view)
 
 ## Questions
 Please feel free to contact me w/any questions.<br/>
