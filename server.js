@@ -1,7 +1,15 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const contmansystem = require("./contmansystem");
-const { viewRoles } = require("./contmansystem");
+const figlet = require("figlet");
+
+figlet("CMS", function (err, data) {
+	if (err) {
+		console.log("Something went wrong...");
+		console.dir(err);
+		return;
+	}
+	console.log(data);
+});
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -11,9 +19,9 @@ const connection = mysql.createConnection({
 	database: "cont_manDB",
 });
 
-function startApp() {
-	inquirer
-		.prompt([
+async function startApp() {
+	try {
+		const answer = await inquirer.prompt([
 			{
 				type: "list",
 				message: "What would you like to do?",
@@ -31,52 +39,365 @@ function startApp() {
 					"View all Roles",
 					"View Departments",
 					"View Payroll",
+					"EXIT APP",
 				],
 			},
-		])
-		.then(({ selection }) => {
-			switch (selection) {
-				case "View all Employees":
-					contmansystem.viewEmployees();
-					break;
-				case "View all Employees by Department":
-					contmansystem.viewEmployeesByDept();
-					break;
-				case "View all Employees by Role":
-					contmansystem.viewEmployeesByRole();
-					break;
-				case "Add Employee":
-					contmansystem.addEmployee();
-					break;
-				case "Add Department":
-					contmansystem.addDepartment();
-					break;
-				case "Add Role":
-					contmansystem.addRole();
-					break;
-				case "View all Roles":
-					contmansystem.viewRoles();
-					break;
-				case "View Departments":
-					contmansystem.viewDepartments();
-					break;
-				case "Remove Employee":
-					contmansystem.removeEmployee();
-					break;
-				case "View Payroll":
-					contmansystem.payRoll();
-					break;
-				case "Remove Role":
-					contmansystem.removeRole();
-				case "Update Salary":
-					contmansystem.updateSalary();
-					break;
-			}
-		});
+		]);
+		const { selection } = answer;
+		switch (selection) {
+			case "View all Employees":
+				viewEmployees();
+				break;
+			case "View all Employees by Department":
+				viewEmployeesByDept();
+				break;
+			case "View all Employees by Role":
+				viewEmployeesByRole();
+				break;
+			case "Add Employee":
+				addEmployee();
+				break;
+			case "Add Department":
+				addDepartment();
+				break;
+			case "Add Role":
+				addRole();
+				break;
+			case "View all Roles":
+				viewRoles();
+				break;
+			case "View Departments":
+				viewDepartments();
+				break;
+			case "Remove Employee":
+				removeEmployee();
+				break;
+			case "View Payroll":
+				payRoll();
+				break;
+			case "Remove Role":
+				removeRole();
+			case "Update Salary":
+				updateSalary();
+				break;
+			case "EXIT APP":
+				connection.end();
+				break;
+		}
+	} catch (err) {
+		throw err;
+	}
 }
 
+function viewEmployees() {
+	let query = "SELECT * FROM employee;";
+	connection.query(query, function (err, res) {
+		if (err) throw err;
+		console.table(res);
+		startApp();
+	});
+}
+
+async function viewEmployeesByDept() {
+	try {
+		const answer = await inquirer
+			.prompt([
+				{
+					type: "list",
+					message: "Which Department would you like to search?",
+					name: "departmentId",
+					choices: ["2414", "5000", "6000"],
+				},
+			])
+			.then((answer) => {
+				let query =
+					"SELECT * FROM employee WHERE manager_id = " +
+					answer.departmentId;
+				connection.query(query, function (err, res) {
+					if (err) throw err;
+					console.table(res);
+					startApp();
+				});
+			});
+	} catch {
+		throw err;
+	}
+}
+
+async function viewEmployeesByRole() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message:
+					"Please enter the employee role you would like to view.",
+				name: "roleTitle",
+			},
+		]);
+		const { roleTitle } = answer;
+		connection.query(
+			"SELECT  role.title, employee.first_name, employee.last_name,  role.salary FROM employee INNER JOIN role WHERE role.title = ?",
+			[roleTitle],
+			(err, res) => {
+				if (err) throw err;
+				console.table(res);
+				startApp();
+			}
+		);
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function addEmployee() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message: "Please enter employee's first name.",
+				name: "first_name",
+			},
+			{
+				type: "input",
+				message: "Please enter employee's last name.",
+				name: "last_name",
+			},
+			{
+				type: "list",
+				message: "Please select from employee role IDs",
+				name: "role_id",
+				choices: [
+					"2410",
+					"2411",
+					"2412",
+					"2413",
+					"2515",
+					"2818",
+					"2919",
+				],
+			},
+			{
+				type: "list",
+				message: "Please select the appropriate manager",
+				name: "manager_id",
+				choices: ["2414", "5000", "6000"],
+			},
+		]);
+
+		const { first_name, last_name, role_id, manager_id } = answer;
+		let query =
+			"INSERT INTO employee(first_name, last_name, role_id, manager_id)VALUES(?, ?, ?, ?);";
+		connection.query(
+			query,
+			[first_name, last_name, role_id, manager_id],
+			function (err, res) {
+				if (err) throw err;
+				viewEmployees();
+				console.log(res.affectedRows + "row(s) were inserted");
+				startApp();
+			}
+		);
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function removeEmployee() {
+	try {
+		inquirer.prompt([
+			{
+				type: "input",
+				message:
+					"Please input the last name of the employee you would like to delete.",
+				name: "last_name",
+			},
+		]);
+
+		const { last_name } = answer;
+		connection.query(
+			"DELETE FROM employee WHERE last_name = ?",
+			[last_name],
+			(err, res) => {
+				if (err) throw err;
+				viewEmployees();
+				startApp();
+				console.log(res.affectedRows + " row(s) removed");
+			}
+		);
+	} catch (err) {
+		throw err;
+	}
+}
+
+function viewRoles() {
+	let query = "SELECT * FROM role;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.table(res);
+		startApp();
+	});
+}
+
+async function removeRole() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message: "What role would you like to remove?",
+				name: "removeRole",
+			},
+		]);
+
+		const { removeRole } = answer;
+		query = "DELETE FROM role WHERE title = ?;";
+		connection.query(query, [removeRole], (err, res) => {
+			if (err) throw err;
+			viewRoles();
+			startApp();
+		});
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function addRole() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message: "Please enter a title",
+				name: "title",
+			},
+			{
+				type: "input",
+				message: "Please enter a salary",
+				name: "salary",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department ID",
+				name: "department_id",
+			},
+		]);
+
+		const { title, salary, department_id } = answer;
+		let query =
+			"INSERT INTO role(title, salary, departmentId)VALUES(?, ?, ?);";
+		connection.query(query, [title, salary, department_id], (err, res) => {
+			if (err) throw err;
+			console.table(res);
+			viewRoles();
+			startApp();
+		});
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function updateSalary() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message: "What's the new salary?",
+				name: "newSal",
+			},
+			{
+				type: "input",
+				message: "What title is being updated?",
+				name: "title",
+			},
+		]);
+
+		const { newSal, title } = answer;
+		let query = "UPDATE role SET salary = ? WHERE title = ?;";
+		connection.query(query, [newSal, title], (err, res) => {
+			if (err) throw err;
+			viewRoles();
+		});
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function payRoll() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "list",
+				message:
+					"Please select a position and the total payroll for that position will be displayed",
+				name: "payroll",
+				choices: [
+					"Senior Developer",
+					"BA/QA Admin",
+					"Jr Developer",
+					"Intern",
+					"Marketing Manager",
+					"Architect",
+					"Engineer",
+					"Manager",
+					"Office Manager",
+					"Developer Manager",
+					"HR Manager",
+					"Office Assistant",
+				],
+			},
+		]);
+
+		const { payroll } = answer;
+		let query =
+			"SELECT  title, SUM(salary) AS total_payroll FROM employee FULL JOIN role WHERE title = ?;";
+		connection.query(query, [payroll], (err, res) => {
+			if (err) throw err;
+			console.table(res);
+			startApp();
+		});
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function addDepartment() {
+	try {
+		const answer = await inquirer.prompt([
+			{
+				type: "input",
+				message: "Please enter a Department ID number",
+				name: "department_id",
+			},
+			{
+				type: "input",
+				message: "Please enter a Department",
+				name: "department",
+			},
+		]);
+
+		const { department_id, department } = answer;
+		let query = "INSERT INTO department(id, name)VALUES(?, ?);";
+		connection.query(query, [department_id, department], (err, res) => {
+			if (err) throw err;
+			console.table(res);
+			viewDepartments();
+			startApp();
+		});
+	} catch (err) {
+		throw err;
+	}
+}
+
+function viewDepartments() {
+	query = "SELECT * FROM department;";
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.table(res);
+		startApp();
+	});
+}
+function exitApp() {
+	connection.end();
+}
 connection.connect(function (err) {
 	if (err) throw err;
 	startApp();
-	connection.end();
 });
